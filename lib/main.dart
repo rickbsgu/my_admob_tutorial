@@ -37,14 +37,14 @@ void main() async {
       theme: ThemeData(
         primaryColor: AppTheme.primary,
         primaryColorDark: AppTheme.primaryDark,
-        accentColor: AppTheme.accent,
+        colorScheme: ThemeData.light().colorScheme.copyWith(secondary:AppTheme.secondary),
         textTheme: GoogleFonts.acmeTextTheme().copyWith(
             button: GoogleFonts.ubuntuMono(
           fontSize: 16,
           fontWeight: FontWeight.bold,
         )),
         buttonTheme: ButtonThemeData(
-          buttonColor: AppTheme.accent,
+          buttonColor: AppTheme.secondary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
           ),

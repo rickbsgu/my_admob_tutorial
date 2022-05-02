@@ -55,7 +55,7 @@ class _HomeRouteState extends State<HomeRoute> {
                       child: Text('Let\'s get started!'),
                     ),
                     style: ElevatedButton.styleFrom(
-                      primary: Theme.of(context).accentColor,
+                      primary: Theme.of(context).colorScheme.secondary,
                     ),
                     onPressed: () {
                       Navigator.of(context).pushNamed('/game');
