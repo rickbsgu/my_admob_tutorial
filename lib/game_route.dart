@@ -34,16 +34,13 @@ class _GameRouteState extends State<GameRoute> implements QuizEventListener {
   late String _clue;
 
   late BannerAd _bannerAd;
-
   bool _isBannerAdReady = false;
 
   InterstitialAd? _interstitialAd;
-
   bool _isInterstitialAdReady = false;
 
-  // TODO: Add _rewardedAd
-
-  // TODO: Add _isRewardedAdReady
+  late RewardedAd? _rewardedAd;
+  bool _isRewardedAdReady = false;
 
   @override
   void initState() {
@@ -72,8 +69,7 @@ class _GameRouteState extends State<GameRoute> implements QuizEventListener {
     );
 
     _bannerAd.load();
-
-    // TODO: Initialize _rewardedAd
+    _loadRewardedAd();
   }
 
   @override
@@ -202,8 +198,29 @@ class _GameRouteState extends State<GameRoute> implements QuizEventListener {
   }
 
   Widget? _buildFloatingActionButton() {
-    // TODO: Return a FloatingActionButton if a Rewarded Ad is available
-    return null;
+    return /*!QuizManager.instance.isHintUsed &&*/ _isRewardedAdReady
+        ? FloatingActionButton.extended(
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                        title: Text('Need a hint?'),
+                        content: Text('Watch an Ad to get a hint...'),
+                        actions: [
+                          TextButton(
+                              child: Text('ok'.toUpperCase()),
+                              onPressed: () {
+                                Navigator.pop(context);
+                                _rewardedAd?.show(onUserEarnedReward: (_, reward) {QuizManager.instance.useHint(); } );
+                              })
+                        ]);
+                  });
+            },
+            label: Text('Hint'),
+            icon: Icon(Icons.card_giftcard),
+          )
+        : null;
   }
 
   void _moveToHome() {
@@ -237,14 +254,38 @@ class _GameRouteState extends State<GameRoute> implements QuizEventListener {
         }));
   }
 
-  // TODO: Implement _loadRewardedAd()
+  void _loadRewardedAd() {
+    RewardedAd.load(
+      adUnitId: AdHelper.rewardedAdUnitId,
+      request: AdRequest(),
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: (ad) {
+          _rewardedAd = ad;
+
+          ad.fullScreenContentCallback =
+              FullScreenContentCallback(onAdDismissedFullScreenContent: (ad) {
+            setState(() {
+              _isRewardedAdReady = false;
+            });
+            _loadRewardedAd();
+          });
+
+          setState(() {
+            _isRewardedAdReady = true;
+          });
+        },
+        onAdFailedToLoad: (err) {
+          print('Failed to load a rewarded ad: ${err.message}');
+        },
+      ),
+    );
+  }
 
   @override
   void dispose() {
     _bannerAd.dispose();
     _interstitialAd?.dispose();
-
-    // TODO: Dispose a RewardedAd object
+    _rewardedAd?.dispose();
 
     QuizManager.instance.listener = null;
 
@@ -264,8 +305,7 @@ class _GameRouteState extends State<GameRoute> implements QuizEventListener {
       _clue = clue;
     });
 
-    if (level > 3  && !_isInterstitialAdReady)
-      _loadInterstitialAd();
+    if (level > 3 && !_isInterstitialAdReady) _loadInterstitialAd();
   }
 
   @override
@@ -287,7 +327,6 @@ class _GameRouteState extends State<GameRoute> implements QuizEventListener {
               onPressed: () {
                 if (_isInterstitialAdReady)
                   _interstitialAd?.show();
-
                 else
                   _moveToHome();
               },
