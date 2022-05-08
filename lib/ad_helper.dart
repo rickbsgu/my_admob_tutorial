@@ -2,6 +2,15 @@ import 'dart:io';
 
 class AdHelper {
 
+  static String get openAdUnitId {
+    if (Platform.isAndroid)
+      return 'ca-app-pub-3940256099942544/3419835294';
+    else if (Platform.isIOS)
+      return 'ca-app-pub-3940256099942544/5662855259';
+    else
+      throw UnsupportedError('Unsupported platform');
+  }
+
   static String get bannerAdUnitId {
     if (Platform.isAndroid) {
       return 'ca-app-pub-3940256099942544/6300978111';
