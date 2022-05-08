@@ -11,6 +11,27 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+//
+
+/// # AppOpenAd implementation
+/// This version adds an _AppOpenAd_ that opens a full page ad when the
+/// app opens.  To make it a little more interesting, I've added a counter
+/// so that it only opens every AD_OPEN_INTERVAL times (you can change this).
+/// 
+/// It's a little more involved, because we need to keep track of the
+/// number of opens (runs), and we need to control the main button state
+/// and text.  I'm using SharedPreferences to keep track of the current
+/// run number so it persists between invocations.
+/// 
+/// To see it work, run the app and then hit 'SKIP THIS LEVEL' for all of the images
+/// and dismiss the interstitial ad.  After AD_OPEN_INTERVAL times of the full
+/// sequence, the _AppOpenAd_ should show.
+/// 
+/// I've also changed how GoogleAds is initialized: in the initial version, the
+/// initializer gets called on every build.  It should only get called once, but
+/// when it does get called, it should control the FutureBuilder, so we can't
+/// do it in the main() function if we want it to do that.
+/// 
 
 import 'package:admob_ads_in_flutter/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -25,18 +46,18 @@ class HomeRoute extends StatefulWidget {
 }
 
 class _HomeRouteState extends State<HomeRoute> {
-  static const int AD_OPEN_INTERVAL = 2;
+  static const int AD_OPEN_INTERVAL = 3;
   static const String PLEASE_WAIT_STRING = 'Please wait...';
   static const String LETS_GET_STARTED_STRING = 'Let\'s get started!';
-  static const String NUM_RUNS_KEY = 'num-invokes';
-  final Future<bool> _theFuture = _initGoogleMobileAds();
+  static const String NUM_RUNS_KEY = 'num-runs';
+  final Future<bool> _theFuture = _initServices();
 
   static bool _adsInitialized = false;
 
   @override
   void initState() {
     super.initState();
-    
+
     Future.delayed(Duration.zero, () async {
       _prefs = await SharedPreferences.getInstance();
       setState(() {
@@ -80,9 +101,6 @@ class _HomeRouteState extends State<HomeRoute> {
   bool get _allowOpenAd {
     return _prefs != null && _numRuns == 0;
   }
-  ///
-  /// end OpenAd control
-  ///
 
   Future<void> loadOpenAd() async {
     AppOpenAd.load(
@@ -95,6 +113,7 @@ class _HomeRouteState extends State<HomeRoute> {
             _buttonEnabled = true;
           });
           ad.dispose();
+          _openAd = null;
         });
 
         _openAd = ad;
@@ -105,6 +124,9 @@ class _HomeRouteState extends State<HomeRoute> {
       orientation: AppOpenAd.orientationPortrait,
     );
   }
+  ///
+  /// end openAdControl
+  /// 
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +153,6 @@ class _HomeRouteState extends State<HomeRoute> {
                 if (snapshot.hasData)
                   Builder(
                     builder: (BuildContext context) {
-                      print('===> building home route');
                       if (_allowOpenAd) {
                         _buttonEnabled = false;
                         WidgetsBinding.instance
@@ -179,6 +200,18 @@ class _HomeRouteState extends State<HomeRoute> {
     );
   }
 
+  ///
+  /// Initialize the shared preferences _and_ 
+  /// GooleMobileAds - return a single future
+  /// for FutureBuilder
+  static Future<bool> _initServices() async {
+    _prefs = await SharedPreferences.getInstance();
+    bool adInit = await _initGoogleMobileAds();
+    return adInit;
+  }
+
+  ///
+  /// Status output for MobileAds.instance.initialize()
   static void printInitStatus(InitializationStatus initStatus) {
     List<MapEntry<String, AdapterStatus>> entries =
         initStatus.adapterStatuses.entries.toList();
@@ -187,9 +220,8 @@ class _HomeRouteState extends State<HomeRoute> {
   }
 
   ///
-  /// Prevent multiple inits
-  /// Should only happen on first instantiation of widget
-  /// (we have to wait for it, though, so that's the FutureBuilder's job)
+  /// Prevent multiple inits of MobileAds - 
+  /// Should only be initialized once in entire app
   /// 
   static Future<bool> _initGoogleMobileAds() {
     // FutureBuilder does not like a Future<void>...
