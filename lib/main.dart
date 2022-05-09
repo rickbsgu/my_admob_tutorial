@@ -15,6 +15,7 @@
 import 'package:admob_ads_in_flutter/app_theme.dart';
 import 'package:admob_ads_in_flutter/game_route.dart';
 import 'package:admob_ads_in_flutter/home_route.dart';
+import 'package:admob_ads_in_flutter/native_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -32,7 +33,8 @@ void main() async {
       home: HomeRoute(),
       routes: <String, WidgetBuilder>{
         '/home': (BuildContext context) => HomeRoute(),
-        '/game': (BuildContext context) => GameRoute()
+        '/game': (BuildContext context) => GameRoute(),
+        '/native': (BuildContext context) => NativeRoute(),
       },
       theme: ThemeData(
         primaryColor: AppTheme.primary,

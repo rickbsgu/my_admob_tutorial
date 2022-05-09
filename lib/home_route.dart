@@ -161,22 +161,39 @@ class _HomeRouteState extends State<HomeRoute> {
                         });
                       }
                       _bumpNumRuns();
-                      return ElevatedButton(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 48.0,
-                            vertical: 12.0,
+                      return Column(
+                        children: [
+                        ElevatedButton(
+                          child: Container(
+                            width:230,
+                            height:38,
+                            child: Text(_buttonString),
+                            alignment: Alignment.center,
                           ),
-                          child: Text(_buttonString),
+                          style: ElevatedButton.styleFrom(
+                            primary: Theme.of(context).colorScheme.secondary,
+                          ),
+                          onPressed: _buttonEnabled
+                              ? () {
+                                  Navigator.of(context).pushNamed('/game');
+                                }
+                              : null,
                         ),
-                        style: ElevatedButton.styleFrom(
-                          primary: Theme.of(context).colorScheme.secondary,
+                        ElevatedButton(
+                          child: Container(
+                            width:230,
+                            height:38,
+                            alignment: Alignment.center,
+                            child: Text("Native ads"),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            primary: Theme.of(context).colorScheme.secondary,
+                          ),
+                          onPressed: () {
+                                  Navigator.of(context).pushNamed('/native');
+                                },
                         ),
-                        onPressed: _buttonEnabled
-                            ? () {
-                                Navigator.of(context).pushNamed('/game');
-                              }
-                            : null,
+                        ],
                       );
                     },
                   )
