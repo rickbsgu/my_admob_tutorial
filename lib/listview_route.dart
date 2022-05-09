@@ -18,13 +18,13 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'package:admob_ads_in_flutter/app_theme.dart';
 
-class NativeRoute extends StatefulWidget {
+class ListviewRoute extends StatefulWidget {
   @override
-  _NativeRouteState createState() => _NativeRouteState();
+  _ListviewRouteState createState() => _ListviewRouteState();
 }
 
-class _NativeRouteState extends State<NativeRoute> {
-  static List<int> adIXs = [1, 3];
+class _ListviewRouteState extends State<ListviewRoute> {
+  final List<int> _adIXs = [0, 3];
   final List<String> _items = <String>[
     'Apple',
     'Orange',
@@ -36,6 +36,8 @@ class _NativeRouteState extends State<NativeRoute> {
 
   @override
   Widget build(BuildContext context) {
+    Iterator adIXIterator = _adIXs.iterator;
+    int adIX = adIXIterator.moveNext()? adIXIterator.current : -1;
     return Scaffold(
       backgroundColor: AppTheme.primary,
       resizeToAvoidBottomInset: false,
@@ -58,17 +60,12 @@ class _NativeRouteState extends State<NativeRoute> {
                   fontFamily: "Arial, Helvetica, sans-serif"),
                   ),
                 ),
-                ListView.builder(
+                ListView.separated(
                   shrinkWrap: true,
                   itemCount: _items.length,
                   itemBuilder: (BuildContext context, int ix) {
                     return Container(
-                      decoration: BoxDecoration(
-                        color: AppTheme.secondary,
-                        border: Border(
-                          bottom: BorderSide(color: Colors.black26, width: 1),
-                        ),
-                      ),
+                      color: AppTheme.secondary,
                       alignment: Alignment.center,
                       child: ListTile(
                         title: Text(
@@ -79,6 +76,23 @@ class _NativeRouteState extends State<NativeRoute> {
                       ),
                     );
                   },
+                  separatorBuilder: (BuildContext context, int ix) {
+                    if (ix == adIX) {
+                      adIX = adIXIterator.moveNext()? adIXIterator.current : -1;
+                      return Container(
+                        color: Colors.lightBlue,
+                        height: 50,
+                        child: Text('Ad here...')
+                      );
+                    }
+                    else
+                      return
+                        Divider(
+                        color: Colors.black38,
+                        height: 0,
+                        thickness: 1,
+                      );
+                  }
                 ),
               ],
             ),

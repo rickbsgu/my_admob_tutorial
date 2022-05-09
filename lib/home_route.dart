@@ -188,14 +188,14 @@ class _HomeRouteState extends State<HomeRoute> {
                               width: 230,
                               height: 38,
                               alignment: Alignment.center,
-                              child: Text("Native ads"),
+                              child: Text("Ads in ListView"),
                             ),
                             style: ElevatedButton.styleFrom(
                               primary: Theme.of(context).colorScheme.secondary,
                             ),
                             onPressed: () {
                               Navigator.of(context)
-                                  .pushReplacementNamed('/native');
+                                  .pushReplacementNamed('/listview');
                             },
                           ),
                         ],
