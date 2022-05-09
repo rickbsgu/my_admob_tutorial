@@ -19,6 +19,7 @@ import 'package:admob_ads_in_flutter/app_theme.dart';
 import 'package:admob_ads_in_flutter/drawing.dart';
 import 'package:admob_ads_in_flutter/drawing_painter.dart';
 import 'package:admob_ads_in_flutter/quiz_manager.dart';
+import 'package:admob_ads_in_flutter/banner_ad_svc.dart';
 import 'package:flutter/material.dart';
 
 class GameRoute extends StatefulWidget {
@@ -32,9 +33,6 @@ class _GameRouteState extends State<GameRoute> implements QuizEventListener {
   late Drawing _drawing;
 
   late String _clue;
-
-  late BannerAd _bannerAd;
-  bool _isBannerAdReady = false;
 
   InterstitialAd? _interstitialAd;
   bool _isInterstitialAdReady = false;
@@ -50,25 +48,6 @@ class _GameRouteState extends State<GameRoute> implements QuizEventListener {
       ..listener = this
       ..startGame();
 
-    _bannerAd = BannerAd(
-      adUnitId: AdHelper.bannerAdUnitId,
-      request: AdRequest(),
-      size: AdSize.banner,
-      listener: BannerAdListener(
-        onAdLoaded: (_) {
-          setState(() {
-            _isBannerAdReady = true;
-          });
-        },
-        onAdFailedToLoad: (ad, err) {
-          print('Failed to load a banner ad: ${err.message}');
-          _isBannerAdReady = false;
-          ad.dispose();
-        },
-      ),
-    );
-
-    _bannerAd.load();
     _loadRewardedAd();
   }
 
@@ -168,14 +147,15 @@ class _GameRouteState extends State<GameRoute> implements QuizEventListener {
                 ],
               ),
             ),
-            if (_isBannerAdReady)
+            if (BannerAdSvc.instance.isBannerAdReady)
               Align(
-                  alignment: Alignment.topCenter,
-                  child: Container(
-                    width: _bannerAd.size.width.toDouble(),
-                    height: _bannerAd.size.height.toDouble(),
-                    child: AdWidget(ad: _bannerAd),
-                  ))
+                alignment: Alignment.topCenter,
+                child: Container(
+                  width: BannerAdSvc.instance.ad.size.width.toDouble(),
+                  height: BannerAdSvc.instance.ad.size.height.toDouble(),
+                  child: AdWidget(ad: BannerAdSvc.instance.ad),
+                ),
+              ),
           ],
         ),
       ),
@@ -212,7 +192,10 @@ class _GameRouteState extends State<GameRoute> implements QuizEventListener {
                               child: Text('ok'.toUpperCase()),
                               onPressed: () {
                                 Navigator.pop(context);
-                                _rewardedAd?.show(onUserEarnedReward: (_, reward) {QuizManager.instance.useHint(); } );
+                                _rewardedAd?.show(
+                                    onUserEarnedReward: (_, reward) {
+                                  QuizManager.instance.useHint();
+                                });
                               })
                         ]);
                   });
@@ -283,7 +266,6 @@ class _GameRouteState extends State<GameRoute> implements QuizEventListener {
 
   @override
   void dispose() {
-    _bannerAd.dispose();
     _interstitialAd?.dispose();
     _rewardedAd?.dispose();
 

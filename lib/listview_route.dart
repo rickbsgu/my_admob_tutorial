@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 import 'package:flutter/material.dart';
-import 'package:admob_ads_in_flutter/ad_helper.dart';
+import 'package:admob_ads_in_flutter/banner_ad_svc.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'package:admob_ads_in_flutter/app_theme.dart';
@@ -24,7 +24,7 @@ class ListviewRoute extends StatefulWidget {
 }
 
 class _ListviewRouteState extends State<ListviewRoute> {
-  final List<int> _adIXs = [0, 3];
+  final List<int> __adIXs = [0];
   final List<String> _items = <String>[
     'Apple',
     'Orange',
@@ -34,10 +34,28 @@ class _ListviewRouteState extends State<ListviewRoute> {
     'Tangerine'
   ];
 
+  int __adIX = -1;
+  late Iterator __adIXIterator;
+
+  void _startAdIterator() {
+    __adIXIterator = __adIXs.iterator;
+    __nextAdIX();
+  }
+
+  void __nextAdIX() {
+    __adIX = __adIXIterator.moveNext() ? __adIXIterator.current : -1;
+  }
+
+  int _checkAdIX(int ixCheck) {
+    int retval = __adIX;
+    if (ixCheck == retval)
+      __nextAdIX();
+    return retval;
+  }
+
   @override
   Widget build(BuildContext context) {
-    Iterator adIXIterator = _adIXs.iterator;
-    int adIX = adIXIterator.moveNext()? adIXIterator.current : -1;
+    _startAdIterator();
     return Scaffold(
       backgroundColor: AppTheme.primary,
       resizeToAvoidBottomInset: false,
@@ -50,50 +68,52 @@ class _ListviewRouteState extends State<ListviewRoute> {
                 Container(
                   width: double.infinity,
                   alignment: Alignment.center,
-                  padding: EdgeInsets.only(top: 20,bottom: 6),
+                  padding: EdgeInsets.only(top: 20, bottom: 6),
                   decoration: BoxDecoration(
                     border: Border(
                       bottom: BorderSide(color: Colors.black26, width: 1),
                     ),
                   ),
-                  child: Text("Some Items:", style: TextStyle(fontSize: 30,
-                  fontFamily: "Arial, Helvetica, sans-serif"),
+                  child: Text(
+                    "Some Items:",
+                    style: TextStyle(
+                        fontSize: 30,
+                        fontFamily: "Arial, Helvetica, sans-serif"),
                   ),
                 ),
                 ListView.separated(
-                  shrinkWrap: true,
-                  itemCount: _items.length,
-                  itemBuilder: (BuildContext context, int ix) {
-                    return Container(
-                      color: AppTheme.secondary,
-                      alignment: Alignment.center,
-                      child: ListTile(
-                        title: Text(
-                          _items[ix],
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontFamily:"Arial, Helvetica, sans-serif", fontSize: 24)
-                        ),
-                      ),
-                    );
-                  },
-                  separatorBuilder: (BuildContext context, int ix) {
-                    if (ix == adIX) {
-                      adIX = adIXIterator.moveNext()? adIXIterator.current : -1;
+                    shrinkWrap: true,
+                    itemCount: _items.length,
+                    itemBuilder: (BuildContext context, int ix) {
                       return Container(
-                        color: Colors.lightBlue,
-                        height: 50,
-                        child: Text('Ad here...')
+                        color: AppTheme.secondary,
+                        alignment: Alignment.center,
+                        child: ListTile(
+                          title: Text(_items[ix],
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontFamily: "Arial, Helvetica, sans-serif",
+                                  fontSize: 24)),
+                        ),
                       );
-                    }
-                    else
-                      return
-                        Divider(
-                        color: Colors.black38,
-                        height: 0,
-                        thickness: 1,
-                      );
-                  }
-                ),
+                    },
+                    separatorBuilder: (BuildContext context, int ix) {
+                      int useAdIX = _checkAdIX(ix);
+                      if (ix == useAdIX &&
+                          BannerAdSvc.instance.isBannerAdReady) {
+                        return Container(
+                            color: Colors.lightBlue,
+                            height:
+                                BannerAdSvc.instance.ad.size.height.toDouble(),
+                            child: AdWidget(ad: BannerAdSvc.instance.ad)
+                        );
+                      } else
+                        return Divider(
+                          color: Colors.black38,
+                          height: 0,
+                          thickness: 1,
+                        );
+                    }),
               ],
             ),
           ),

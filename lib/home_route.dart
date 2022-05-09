@@ -34,6 +34,7 @@
 ///
 
 import 'package:admob_ads_in_flutter/app_theme.dart';
+import 'package:admob_ads_in_flutter/banner_ad_svc.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'dart:async';
@@ -229,6 +230,9 @@ class _HomeRouteState extends State<HomeRoute> {
   static Future<bool> _initServices() async {
     _prefs = await SharedPreferences.getInstance();
     bool adInit = await _initGoogleMobileAds();
+    BannerAdSvc.instance.loadAds();
+            // don't wait for it - we'll check for it where we need it.
+
     return adInit;
   }
 
