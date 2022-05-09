@@ -40,18 +40,56 @@ class _NativeRouteState extends State<NativeRoute> {
       backgroundColor: AppTheme.primary,
       resizeToAvoidBottomInset: false,
       body: SafeArea(
-        child: Center(
-          child: ListView.builder(
-            itemCount: _items.length,
-            itemBuilder: (BuildContext context, int ix) {
-              return Container(
-                child: ListTile(
-                  title: Text(_items[ix]),
+        child: Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              children: [
+                Container(
+                  width: double.infinity,
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.only(top: 20,bottom: 6),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: Colors.black26, width: 1),
+                    ),
+                  ),
+                  child: Text("Some Items:", style: TextStyle(fontSize: 30,
+                  fontFamily: "Arial, Helvetica, sans-serif"),
+                  ),
                 ),
-              );
-            },
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _items.length,
+                  itemBuilder: (BuildContext context, int ix) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: AppTheme.secondary,
+                        border: Border(
+                          bottom: BorderSide(color: Colors.black26, width: 1),
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: ListTile(
+                        title: Text(
+                          _items[ix],
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontFamily:"Arial, Helvetica, sans-serif", fontSize: 24)
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.home),
+        onPressed: () {
+          Navigator.of(context).pushReplacementNamed('/home');
+        },
       ),
     );
   }
