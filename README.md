@@ -1,6 +1,4 @@
-# my_admob_tutorial
-
-A new Flutter project.
+# Adding Admob to Flutter Project
 
 ## Getting Started
 
@@ -13,14 +11,14 @@ Tags:
  - completed: the end point of the tutorial
  - bonus_AppAd_with_numruns_filter: a bonus level, the original didn't have an appAd, which I've added plus other changes. See the note in lib/home_route.dart.
 
-__*README Content from the original project:*__  
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+> __*README Content from the original project:*__  
+> This project is a starting point for a Flutter application.
+>
+> A few resources to get you started if this is your first Flutter project:
+>
+> - [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
+> - [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+>
+> For help getting started with Flutter, view our
+> [online documentation](https://flutter.dev/docs), which offers tutorials,
+> samples, guidance on mobile development, and a full API reference.
