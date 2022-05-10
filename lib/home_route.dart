@@ -184,7 +184,7 @@ class _HomeRouteState extends State<HomeRoute> {
                                   }
                                 : null,
                           ),
-                          ElevatedButton(
+                          if (_buttonEnabled) ElevatedButton(
                             child: Container(
                               width: 230,
                               height: 38,
