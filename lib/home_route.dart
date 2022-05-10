@@ -230,7 +230,7 @@ class _HomeRouteState extends State<HomeRoute> {
   static Future<bool> _initServices() async {
     _prefs = await SharedPreferences.getInstance();
     bool adInit = await _initGoogleMobileAds();
-    BannerAdSvc.instance.loadAds();
+    BannerAdSvc.instance.loadAd();
             // don't wait for it - we'll check for it where we need it.
 
     return adInit;
